@@ -58,6 +58,8 @@ VITE_SUPABASE_ANON_KEY=<anon key>
 ### 4. 실행
 
 ```bash
+git clone https://github.com/donggil113/paper_db
+cd paper_db
 npm install
 npm run dev      # 개발 서버 (http://localhost:5173)
 npm run build    # 배포용 정적 파일 → dist/
@@ -65,8 +67,22 @@ npm run preview  # 빌드 결과 미리보기
 npm run lint     # ESLint
 ```
 
+> **Windows PowerShell 사용자**
+> 구버전 PowerShell(5.x)은 `&&` 를 인식하지 못합니다. `cd paper_db && npm install` 처럼 붙여 쓰지 말고
+> **한 줄에 하나씩** 실행하거나 `;` 로 이으세요. `cd` 가 실패한 채로 다음 명령을 실행하면
+> `.env.example 경로를 찾을 수 없습니다` 나 `Missing script: "dev"` 같은 오류가 납니다 —
+> 프로젝트 폴더가 아니라 홈 폴더에서 명령이 돈 것이므로, `pwd` 로 현재 위치부터 확인하세요.
+>
+> `.env` 만드는 명령도 PowerShell 에서는 이렇게 씁니다.
+> ```powershell
+> Copy-Item .env.example .env
+> notepad .env
+> ```
+
 첫 화면에서 **회원가입**으로 계정을 만들면 바로 내 서재가 열립니다.
-Supabase 프로젝트에서 이메일 인증이 켜져 있으면 인증 메일의 링크를 누른 뒤 로그인하세요.
+새로 만든 Supabase 프로젝트는 이메일 인증이 기본으로 켜져 있어, 가입하면 인증 메일이 먼저 옵니다.
+메일의 링크를 누른 뒤 로그인하세요. 혼자 쓰는 사이트라 인증이 번거롭다면
+Supabase → **Authentication → Sign In / Providers → Email** 에서 `Confirm email` 을 꺼도 됩니다.
 
 ## 나만 쓰도록 잠그기
 
@@ -74,11 +90,40 @@ Supabase 프로젝트에서 이메일 인증이 켜져 있으면 인증 메일�
 계정을 하나 만든 뒤 Supabase 대시보드 → **Authentication → Sign In / Providers** 에서
 `Allow new users to sign up` 을 꺼 두세요. 이미 만든 계정으로는 계속 로그인할 수 있습니다.
 
-## 배포
+## 배포 (Vercel 기준)
 
-`npm run build` 결과인 `dist/` 를 정적 호스팅에 올리면 됩니다 (Vercel, Netlify, Cloudflare Pages 등).
-호스팅 대시보드에도 `VITE_SUPABASE_URL` 과 `VITE_SUPABASE_ANON_KEY` 를 환경변수로 넣어야 합니다.
+이 저장소를 Vercel 에 연결하면 `main` 에 푸시할 때마다 자동으로 배포됩니다.
+Vite 프로젝트로 자동 인식되므로 빌드 설정은 건드릴 필요가 없습니다.
+
+**환경변수는 반드시 넣어야 합니다.** 넣지 않으면 사이트가 "Supabase 설정이 필요합니다" 안내 화면만 보여 줍니다.
+
+1. Vercel 프로젝트 → **Settings → Environment Variables**
+2. 두 개를 추가합니다. 적용 환경은 **Production 을 포함해** 전부 체크하세요.
+   | Key | Value |
+   | --- | --- |
+   | `VITE_SUPABASE_URL` | `https://<프로젝트>.supabase.co` |
+   | `VITE_SUPABASE_ANON_KEY` | Supabase 의 anon key |
+3. **Deployments → 맨 위 배포의 `⋯` → Redeploy** 로 다시 배포합니다.
+
+> 3번을 빠뜨리기 쉽습니다. Vite 는 `VITE_*` 값을 **빌드할 때 코드에 박아 넣기** 때문에,
+> 환경변수를 저장만 하고 재배포하지 않으면 이미 빌드된 파일에는 값이 없어 그대로 안내 화면이 나옵니다.
+> 재배포 후에도 같은 화면이면 `Use existing Build Cache` 를 끄고 다시 배포해 보세요.
+
+### Supabase 쪽 마무리
+
+배포 주소가 생기면 Supabase → **Authentication → URL Configuration → Site URL** 을 그 주소로 바꿉니다.
+그래야 회원가입 인증 메일의 링크가 `localhost` 가 아니라 실제 사이트로 연결됩니다.
+
 검색엔진에 노출되지 않도록 `index.html` 에 `noindex` 를 넣어 두었습니다.
+
+### 잘 안 될 때
+
+| 증상 | 원인 · 해결 |
+| --- | --- |
+| "Supabase 설정이 필요합니다" 화면만 보임 | 환경변수가 없거나 넣고 재배포를 안 함 → 위 배포 절차 1~3 |
+| 로그인은 되는데 목록이 비어 있고 오류 토스트가 뜸 | `001_papers.sql` 을 아직 실행하지 않음 → SQL Editor 에서 실행 |
+| 가입 후 메일이 오지 않음 | Supabase 무료 플랜의 메일 발송 제한 → `Confirm email` 을 끄고 바로 가입 |
+| 인증 메일 링크가 localhost 로 감 | Site URL 이 기본값 → 위 "Supabase 쪽 마무리" 참고 |
 
 ## 구조
 

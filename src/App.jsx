@@ -88,9 +88,13 @@ function EnvSetup() {
       <div className="app-env-card">
         <Settings size={30} />
         <h1>Supabase 설정이 필요합니다</h1>
-        <p>프로젝트 루트에 <code>.env</code> 파일을 만들고 아래 두 값을 채운 뒤 개발 서버를 다시 시작하세요.</p>
+        <p>아래 두 값을 환경변수로 넣어야 서재가 열립니다.</p>
         <pre>{`VITE_SUPABASE_URL=https://<프로젝트>.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon key>`}</pre>
+        <ul>
+          <li><b>내 컴퓨터에서 실행 중이라면</b> — 프로젝트 폴더에 <code>.env</code> 파일을 만들어 두 줄을 넣고 개발 서버를 다시 시작하세요.</li>
+          <li><b>배포된 사이트라면</b> — 호스팅(Vercel 등)의 Environment Variables 에 넣은 뒤 <b>반드시 다시 배포</b>하세요. 이 값은 빌드할 때 코드에 박히므로 저장만 해서는 반영되지 않습니다.</li>
+        </ul>
         <p className="dim">값은 Supabase 대시보드 → Project Settings → Data API / API Keys 에서 확인할 수 있습니다. 자세한 순서는 저장소의 README.md 를 참고하세요.</p>
       </div>
     </div>
@@ -129,6 +133,8 @@ const styles = `
 .app-env-card code { background:#f1f5f9; padding:1px 6px; border-radius:5px; font-size:.92em; color:#334155; }
 .app-env-card pre { width:100%; margin:0; background:#0f172a; color:#e2e8f0; padding:14px 16px; border-radius:12px;
   font-size:12.5px; line-height:1.6; overflow:auto; }
+.app-env-card ul { margin:0; padding-left:19px; display:grid; gap:7px; color:#475569; font-size:13px; line-height:1.65; }
+.app-env-card li b { color:#334155; }
 
 @media (max-width: 820px) {
   .app-bar-inner { padding:10px 14px; gap:10px; }
