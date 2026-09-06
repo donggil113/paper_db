@@ -1,0 +1,15 @@
+{
+  "name": "논문 서재",
+  "short_name": "논문 서재",
+  "description": "읽은 논문을 차례대로 정리하고 요약본을 분야·주제별로 모아 보는 개인 논문 서재",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#4f46e5",
+  "lang": "ko",
+  "icons": [
+    { "src": "/pwa-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/pwa-icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
