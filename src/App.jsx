@@ -2,7 +2,7 @@
 // 로그인 여부에 따라 로그인 화면(Auth)과 서재(Papers)를 가른다.
 import { useCallback, useEffect, useState } from "react";
 import { BookOpen, CheckCircle2, AlertCircle, LogOut, Settings } from "lucide-react";
-import { supabase } from "./supabase.js";
+import { supabase, configIssue, supabaseUrl } from "./supabase.js";
 import Auth from "./Auth.jsx";
 import Papers from "./Papers.jsx";
 
@@ -81,13 +81,31 @@ export default function App() {
   );
 }
 
-// .env 가 없을 때의 안내 화면
+// 환경변수가 없거나 값이 잘못됐을 때의 안내 화면
+const ISSUE_HINTS = {
+  "missing-url": { title: "VITE_SUPABASE_URL 이 비어 있습니다", body: "주소 값이 전달되지 않았습니다. 이름의 철자와, 배포 환경(Production)에 적용되어 있는지 확인하세요." },
+  "missing-key": { title: "VITE_SUPABASE_ANON_KEY 가 비어 있습니다", body: "키 값이 전달되지 않았습니다. 이름의 철자와, 배포 환경(Production)에 적용되어 있는지 확인하세요." },
+  "bad-url": { title: "VITE_SUPABASE_URL 의 형식이 잘못됐습니다", body: "https://<프로젝트>.supabase.co 형태여야 합니다. 대시보드의 API URL 끝에 붙는 /rest/v1/ 은 빼고 넣으세요." },
+  "key-is-url": { title: "VITE_SUPABASE_ANON_KEY 자리에 주소가 들어가 있습니다", body: "이 칸에는 주소가 아니라 anon(공개) 키를 넣어야 합니다. Supabase → Project Settings → API Keys 의 긴 문자열입니다." },
+  "key-too-short": { title: "VITE_SUPABASE_ANON_KEY 값이 너무 짧습니다", body: "anon 키는 eyJ… 로 시작하는 긴 문자열이거나 sb_publishable_… 형식입니다. 값이 잘려 들어가지 않았는지 확인하세요." },
+};
+
 function EnvSetup() {
+  const hint = ISSUE_HINTS[configIssue];
   return (
     <div className="app-env">
       <div className="app-env-card">
         <Settings size={30} />
         <h1>Supabase 설정이 필요합니다</h1>
+        {hint && (
+          <div className="app-env-issue">
+            <AlertCircle size={16} />
+            <div><strong>{hint.title}</strong><span>{hint.body}</span></div>
+          </div>
+        )}
+        {configIssue === "bad-url" && supabaseUrl && (
+          <p className="dim">현재 들어온 값: <code>{supabaseUrl}</code></p>
+        )}
         <p>아래 두 값을 환경변수로 넣어야 서재가 열립니다.</p>
         <pre>{`VITE_SUPABASE_URL=https://<프로젝트>.supabase.co
 VITE_SUPABASE_ANON_KEY=<anon key>`}</pre>
@@ -135,6 +153,9 @@ const styles = `
   font-size:12.5px; line-height:1.6; overflow:auto; }
 .app-env-card ul { margin:0; padding-left:19px; display:grid; gap:7px; color:#475569; font-size:13px; line-height:1.65; }
 .app-env-card li b { color:#334155; }
+.app-env-issue { width:100%; display:flex; gap:9px; padding:12px 14px; border-radius:12px; background:#fff1f2; border:1px solid #fecdd3; color:#e11d48; }
+.app-env-issue strong { display:block; font-size:13.5px; }
+.app-env-issue span { display:block; margin-top:3px; color:#9f1239; font-size:12.5px; line-height:1.6; }
 
 @media (max-width: 820px) {
   .app-bar-inner { padding:10px 14px; gap:10px; }
